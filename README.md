@@ -3,6 +3,7 @@
 ## Implemented Till Now
 - Fixed size stack allocated cicular queue.
 - Fixed size heap allocated heap queue.
+- Variable size linked list queue.
 
 ## Benchmarks
 
@@ -31,6 +32,12 @@
       <td align="center">0.8497384644</td>
       <td align="center">0.7437602081</td>
     </tr>
+    <tr>
+      <td>VariableSizeLinkedListQueue (2 ^ 16 Elements)</td>
+      <td align="center">3.325695015</td>
+      <td align="center">9.06833786</td>
+      <td align="center">8.425603485</td>
+    </tr>
   </tbody>
 </table>
 
@@ -48,3 +55,7 @@
 - Fixed size heap allocated circular queue.
 
 > Heap allocation allows for certainity that there will be no overflow into other stack varibles like head and tail so those can be kept in registers only. Also heap is probably made for this stuff so some other optimization are also there.
+
+- Variable size linked list queue.
+
+> Obvious 5 - 10 times slower than circular arrays but intrestingly batch push or batch pop operation is extra slow cause of multiple allocations causing cache evictions unlike in case push pop case where everything can be kept in cache mostly.
