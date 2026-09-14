@@ -3,6 +3,8 @@ use std::time::Instant;
 
 use crate::ring_buffers::ring_buffer_trait::{BufferState, LocalQueue};
 
+const MAX_BENCH_BATCH: usize = 1 << 20;
+
 pub struct TestRes {
     pub avg_latency: f64,
 }
@@ -17,11 +19,11 @@ pub fn push_pop<R>(rb: &mut R, num_of_push_pops: u64, iterations: u64) -> Result
 where
     R: LocalQueue + BufferState<Item = usize>,
 {
-    let cap = rb.capacity();
+    let fill_target = rb.capacity().min(MAX_BENCH_BATCH) / 2;
 
     // Fill till half capactiy
 
-    for i in 0..cap / 2 {
+    for i in 0..fill_target {
         let _ = rb.push(i);
     }
 
@@ -58,8 +60,7 @@ pub fn push<R>(rb: &mut R, iterations: u64) -> Result<TestRes, String>
 where
     R: LocalQueue + BufferState<Item = usize>,
 {
-    let cap = rb.capacity();
-    let batch_size = cap;
+    let batch_size = rb.capacity().min(MAX_BENCH_BATCH);
 
     let mut total_push_nanos = 0;
 
@@ -98,8 +99,7 @@ pub fn pop<R>(rb: &mut R, iterations: u64) -> Result<TestRes, String>
 where
     R: LocalQueue + BufferState<Item = usize>,
 {
-    let cap = rb.capacity();
-    let batch_size = cap;
+    let batch_size = rb.capacity().min(MAX_BENCH_BATCH);
 
     let mut total_pop_nanos = 0;
 
