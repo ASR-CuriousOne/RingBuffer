@@ -1,11 +1,15 @@
 use ring_buffer::benchmarks::single_threaded::{pop, push, push_pop};
-use ring_buffer::ring_buffers::linked_list_queue::StdLinkedListQueue;
+use ring_buffer::ring_buffers::bip_buffer_queue::BipBufferQueue;
 
 fn main() {
+    let args: Vec<String> = std::env::args().collect();
+
+    let capacity_exponent: usize = args[1].parse().unwrap();
+
     let num_of_push_pops = 100000;
     let iterations = 1000;
 
-    let mut rb = StdLinkedListQueue::<usize>::new();
+    let mut rb = BipBufferQueue::<usize>::new(1 << capacity_exponent);
 
     let res_push_pop = push_pop(&mut rb, num_of_push_pops, iterations).unwrap();
     let res_push = push(&mut rb, iterations).unwrap();
