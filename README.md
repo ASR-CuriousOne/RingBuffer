@@ -4,6 +4,7 @@
 - Fixed size stack allocated cicular queue.
 - Fixed size heap allocated heap queue.
 - Variable size linked list queue.
+- Bipartite buffer queue.
 
 ## Benchmarks
 
@@ -38,6 +39,12 @@
       <td align="center">9.06833786</td>
       <td align="center">8.425603485</td>
     </tr>
+    <tr>
+      <td>BipartiteBufferQueue (2 ^ 16 Elements)</td>
+      <td align="center">0.78825115</td>
+      <td align="center">0.8831299133</td>
+      <td align="center">0.8654369965</td>
+    </tr>
   </tbody>
 </table>
 
@@ -59,3 +66,7 @@
 - Variable size linked list queue.
 
 > Obvious 5 - 10 times slower than circular arrays but intrestingly batch push or batch pop operation is extra slow cause of multiple allocations causing cache evictions unlike in case push pop case where everything can be kept in cache mostly.
+
+- Bipartite Buffer queue
+
+> Allows for faster chunk reads. Latency similar to heap circular queue.
