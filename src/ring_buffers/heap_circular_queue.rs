@@ -1,6 +1,6 @@
 use super::ring_buffer_trait::{BufferState, LocalQueue};
 
-struct FixedSizeHeapCircularQueue<T> {
+pub struct FixedSizeHeapCircularQueue<T> {
     data: Vec<Option<T>>,
     head: usize,
     tail: usize,

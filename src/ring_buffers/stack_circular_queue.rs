@@ -1,6 +1,6 @@
 use super::ring_buffer_trait::{BufferState, LocalQueue};
 
-struct FixedSizeStackCircularQueue<T, const CAPACITY: usize> {
+pub struct FixedSizeStackCircularQueue<T, const CAPACITY: usize> {
     data: [Option<T>; CAPACITY],
     head: usize,
     tail: usize,
