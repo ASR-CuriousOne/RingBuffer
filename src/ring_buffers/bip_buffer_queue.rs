@@ -83,3 +83,27 @@ impl<T> LocalQueue for BipBufferQueue<T> {
         Some(item)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ring_buffers::tests;
+
+    #[test]
+    fn basic_push_pop() {
+        let queue = BipBufferQueue::<i32>::new(3);
+        tests::verify_basic_push_pop(queue);
+    }
+
+    #[test]
+    fn push_full() {
+        let queue = BipBufferQueue::<String>::new(2);
+        tests::verify_push_full(queue);
+    }
+
+    #[test]
+    fn wrap_around() {
+        let queue = BipBufferQueue::<i32>::new(3);
+        tests::verify_wrap_around(queue);
+    }
+}

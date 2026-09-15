@@ -41,7 +41,7 @@ impl<T> BufferState for FixedSizeHeapCircularQueue<T> {
     }
 
     fn is_full(&self) -> bool {
-        self.len == self.capacity
+        self.len >= self.capacity
     }
 }
 

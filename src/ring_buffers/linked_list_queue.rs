@@ -43,3 +43,15 @@ impl<T> LocalQueue for StdLinkedListQueue<T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ring_buffers::tests;
+
+    #[test]
+    fn basic_push_pop() {
+        let queue = StdLinkedListQueue::<i32>::new();
+        tests::verify_basic_push_pop(queue);
+    }
+}
