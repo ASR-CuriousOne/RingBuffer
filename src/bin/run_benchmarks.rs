@@ -1,5 +1,5 @@
 use ring_buffer::benchmarks::single_threaded::{pop, push, push_pop};
-use ring_buffer::ring_buffers::bip_buffer_queue::BipBufferQueue;
+use ring_buffer::ring_buffers::heap_circular_queue::FixedSizeHeapCircularQueue;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -9,7 +9,7 @@ fn main() {
     let num_of_push_pops = 100000;
     let iterations = 1000;
 
-    let mut rb = BipBufferQueue::<usize>::new(1 << capacity_exponent);
+    let mut rb = FixedSizeHeapCircularQueue::<usize>::new(1 << capacity_exponent);
 
     let res_push_pop = push_pop(&mut rb, num_of_push_pops, iterations).unwrap();
     let res_push = push(&mut rb, iterations).unwrap();

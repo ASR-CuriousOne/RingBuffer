@@ -17,7 +17,18 @@ pub trait LocalQueue: BufferState {
     fn pop(&mut self) -> Option<Self::Item>;
 }
 
-pub trait SharedQueue: BufferState + Send + Sync {
-    fn push(&self, item: Self::Item) -> Result<(), Self::Item>;
-    fn pop(&self) -> Option<Self::Item>;
+pub trait Producer: BufferState {
+    fn push(&mut self, item: Self::Item) -> Result<(), Self::Item>;
+}
+
+pub trait Consumer: BufferState {
+    fn pop(&mut self) -> Option<Self::Item>;
+}
+
+pub trait SPSCQueue {
+    type Item;
+    type ProducerHandle: Producer<Item = Self::Item>;
+    type ConsumerHandle: Consumer<Item = Self::Item>;
+
+    fn new(self) -> (Self::ProducerHandle, Self::ConsumerHandle);
 }
