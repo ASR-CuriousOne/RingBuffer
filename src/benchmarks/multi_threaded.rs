@@ -63,7 +63,7 @@ pub fn bench_spsc_concurrent_batch(
     mut consumer: RingBufferConsumer<usize>,
     num_operations: u64,
     batch_size: usize,
-    producer_core: core_affinity::CoreId, 
+    producer_core: core_affinity::CoreId,
     consumer_core: core_affinity::CoreId,
 ) -> Result<TestRes, String>
 where
@@ -122,3 +122,5 @@ where
 
     Ok(TestRes::new(avg_latency))
 }
+
+

@@ -7,7 +7,7 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
-#[repr(align(32))]
+#[repr(align(64))]
 struct CacheAligned<T>(T);
 
 struct RingBufferInner<T> {
