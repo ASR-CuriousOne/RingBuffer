@@ -6,6 +6,8 @@ use crate::benchmarks::single_threaded::TestRes;
 use crate::ring_buffers::ring_buffer_trait::{Consumer, Producer};
 use crate::ring_buffers::spsc_ring_buffer::{RingBufferConsumer, RingBufferProducer};
 
+use hdrhistogram::Histogram;
+
 pub fn bench_spsc_concurrent<P, C>(
     mut prod: P,
     mut cons: C,
@@ -123,4 +125,70 @@ where
     Ok(TestRes::new(avg_latency))
 }
 
+#[derive(Copy, Clone)]
+pub struct Event {
+    pub timestamp: Instant,
+    pub payload: [u64; 4],
+}
 
+impl Default for Event {
+    fn default() -> Self {
+        Self {
+            timestamp: Instant::now(),
+            payload: [0; 4],
+        }
+    }
+}
+
+pub fn bench_spsc_latency_histogram(
+    mut prod: RingBufferProducer<Event>,
+    mut cons: RingBufferConsumer<Event>,
+    num_operations: u64,
+    producer_core: core_affinity::CoreId,
+    consumer_core: core_affinity::CoreId,
+) -> Result<Histogram<u64>, String> {
+    let dummy = Event::default();
+    for _ in 0..10_000 {
+        while prod.push(dummy).is_err() {}
+        while cons.pop().is_none() {}
+    }
+
+    let producer_handle = thread::spawn(move || {
+        core_affinity::set_for_current(producer_core);
+        let mut event = Event::default();
+
+        for i in 0..num_operations {
+            event.payload[0] = i;
+            event.timestamp = Instant::now(); 
+
+            while prod.push(black_box(event)).is_err() {
+                std::hint::spin_loop();
+            }
+
+            for _ in 0..100 {
+                std::hint::spin_loop();
+            }
+        }
+    });
+
+    core_affinity::set_for_current(consumer_core);
+    let mut hist = Histogram::<u64>::new(3).map_err(|_| "Failed to create histogram")?;
+
+    for _ in 0..num_operations {
+        loop {
+            if let Some(event) = cons.pop() {
+                let latency_ns = event.timestamp.elapsed().as_nanos() as u64;
+                let _ = hist.record(latency_ns);
+                black_box(event);
+                break;
+            }
+            std::hint::spin_loop();
+        }
+    }
+
+    producer_handle
+        .join()
+        .map_err(|_| "Producer thread panicked")?;
+
+    Ok(hist)
+}

@@ -6,6 +6,7 @@ edition = "2024"
 
 [dependencies]
 core_affinity = "0.8.3"
+hdrhistogram = "7.6.0"
 
 [profile.release]
 debug=true

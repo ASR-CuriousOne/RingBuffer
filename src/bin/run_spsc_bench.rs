@@ -1,4 +1,6 @@
-use ring_buffer::benchmarks::multi_threaded::{bench_spsc_concurrent, bench_spsc_concurrent_batch};
+use ring_buffer::benchmarks::multi_threaded::{
+    Event, bench_spsc_concurrent, bench_spsc_concurrent_batch,bench_spsc_latency_histogram
+};
 use ring_buffer::benchmarks::throughput::measure_spsc_throughput;
 use ring_buffer::ring_buffers::spsc_ring_buffer::create_queue;
 
@@ -47,4 +49,19 @@ fn main() {
 
     println!("Total Consumed: {}", throughput_result.total_items_consumed);
     println!("Throughput: {:.2} ops/sec", throughput_result.throughput);
+
+    let (prod3, cons3) = create_queue::<Event>(capacity);
+    println!("Running Latency Histogram Benchmark...");
+    let histogram =
+        bench_spsc_latency_histogram(prod3, cons3, num_operations, producer_core, consumer_core)
+            .unwrap();
+
+    println!("--- Latency Percentiles (Nanoseconds) ---");
+    println!("Min:    {} ns", histogram.min());
+    println!("p50:    {} ns", histogram.value_at_quantile(0.50));
+    println!("p90:    {} ns", histogram.value_at_quantile(0.90));
+    println!("p99:    {} ns", histogram.value_at_quantile(0.99));
+    println!("p99.9:  {} ns", histogram.value_at_quantile(0.999));
+    println!("p99.99: {} ns", histogram.value_at_quantile(0.9999));
+    println!("Max:    {} ns", histogram.max());
 }
